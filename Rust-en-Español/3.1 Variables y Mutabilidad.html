@@ -4,15 +4,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link>
     <style>
         html {
             background-color: hsl(210, 25%, 8%);
             color: #c5c5c5;
             font-size: 17px;
             font-family: "Open Sans", sans-serif;
-            max-width: 800px;
-            min-width: 490px; 
             margin: auto;
+        }
+        body {
+            display: block;
+        }
+        div {
+            display: block;
         }
         .example_code {
             position: relative;
@@ -20,6 +25,14 @@
             background-color: #191f26;
             border-radius: 4px;
             padding: 12px;
+        }
+        .example_code_with_ferris {
+            position: relative;
+            width: 100% !important;
+            background-color: #191f26;
+            border-radius: 4px;
+            padding: 12px;
+            padding-top: 0px;
         }
         .orange {
             color: #ffb454;
@@ -53,69 +66,208 @@
         p {
             line-height: 25px;
         }
+        .side-nav-bar {
+            width: 310px;
+            background-color: #161a22;
+            float: left;
+            position: fixed;
+            margin: 0px;
+            border-radius: 5px;
+            top: 0px;
+            bottom: 1px;
+            left: 1px;
+            right: 1px;
+            display: block;
+            padding-top: 10px;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 15px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ffb454;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ffee99;
+            border-radius: 2px;
+        }
+        .side-nav-scrollbox {
+            width: 310px;
+        }
+        .content {
+            max-width: 800px;
+            min-width: 490px; 
+            margin: auto;
+        }
+        a {
+            text-decoration: none;
+        }
+        li a {
+            text-decoration: none;
+            color: #c8c9db;
+        }
+        #chapters li a:hover {
+            color: #ffb454;
+        }
+        #chapters li {
+            color: #c5c5c5;
+            list-style: none!important;
+            line-height: 22px;
+            font-size: 0.875em;
+            list-style-type: none;
+            margin-left: -27px;
+            width: 252px;
+        }
+        .sub-chapters {
+            font-size: 16px!important;  
+        }
+        .sub-chapters li {
+            line-height: 22px!important; 
+            margin-left: -15px!important;
+        }
+        #chapters li {
+            margin-top: 7px;
+        }
+        pre {
+            position: relative;
+            white-space: pre;
+        }
+        .ferris {
+            max-width: 90px;
+            position: absolute;
+            margin: 40px 0 0 590px;
+        }
+
     </style>
     <title>Variables y Mutabilidad - Rust, el lenguaje de programación</title>
 </head>
 <body>
-    <h2>Variables y Mutabilidad</h2>
-    <p>Como mencionamos en la seccion <a target="_blank" href="">"Guardando Valores con Variables"</a>, por defecto, las variables son inmutables. Esta es una de las ayudas que te da Rust para escribir tu codigo de una manera que tome ventaja de la seguridad y la simultaneidad que te ofrece este lenguaje. Sin embargo, aun tienes la opcion de hacer mutables tus variables. Exploremos como y por que Rust fomenta la inmutabilidad y por que aveces preferirias no utilizarla.</p>
-    <p>Cuando una variable es inmutable, una vez que un valor esta unido a su nombre, no se puede cambiar dicho valor. Para ilustrar esto, crearemos un nuevo projecto llamado <i>variables</i> en tu directorio <i>projectos</i> usando <span class="in_text_command">cargo new variables</span>.</p>
-    <p>Luego, en tu nuevo directorio <i>variables</i>, abriremos <i>src/main.rs</i> y reemplazaremos su codigo con el siguiente. Este codigo no compilará aún, primero examinaremos el error de inmutabilidad.</p>
-    <p>Nombre del archivo: src/main.rs</p>
-    <pre class="example_code"><span class="orange_strong">fn</span> <span class=orange>main</span>() {
-        <span class="orange_strong">let</span> x = <span class="yellow">5</span>;
-        <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
-        x = <span class="yellow">6</span>;
-        <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
-    }</pre>
-    <p>Guarda y corre el archivo usando <span class="in_text_command">cargo run</span>. Deberias recibir un mensaje de error, como lo muestra en el output.</p>
-    <pre class="example_command"><span class="yellow">$</span> cargo run
-        Compiling variables v0.1.0 (file:///projects/variables)
-     error[E0384]: cannot assign twice to immutable variable `x`
-     <span class="yellow">--></span> src/main.rs:4:5
-       |
-     2 |     let x = 5;
-       |         -
-       |         |
-       |         first assignment to `x`
-       |         help: consider making this binding mutable: `mut x`
-     3 |     println!("El valor de x es: {x}");
-     4 |     x = 6;
-       |     ^^^^^ cannot assign twice to immutable variable
-     
-     For more information about this error, try `rustc --explain E0384`.
-     error: could not compile `variables` due to previous error</pre>
-    <p>Este ejemplo anterior nos muestra como el compilador puede ayudarnos a encontrar errores en nuestros programas. Los errores de compilado pueden ser frustrantes, pero en realidad todo lo que muestran es que nuestro codigo aún no esta funcionando como queremos. Estos errores <i>no</i> significan que no eres un buen programador! Incluso a los Rustaceos más experimentados les aparecen errores de compilado.</p>
-    <p>El error de compilado indica que la causa del error es gracias a que no se puede <span class="in_text_command"> asignar dos veces a la variable inmutable `x`</span>, porque intentamos asignar un segundo valor a la variable inmutable <span class="in_text_command">x</span>.</p>
-    <p>Es importante que tengamos errores durante el compilado cuando intentamos cambiar un valor que esta designado como inmutable porque esta misma situacion puede llevar a un bug. Si una parte de nuestro codigo opera bajo la suposición de que un valor no va a cambiar y otra parte de nuestro codigo cambia dicho valor, es posible que la primer parte del codigo no haga la cosa para el cual fue diseñado. La causa de este tipo de bug puede ser dificil de encontrar despues de haber cometido el error, mucho mas cuando la segunda parte del codigo solo <i>aveces</i> cambia el valor de la variable. El compilador de Rust se asegura de que al decirle que un valor no debe cambiar, de verdad no cambie, para que no tengas que tenerlo en mente por tu cuenta. De esta manera tu codigo se vuelve mas simple de entender.</p>
-    <p>Pero la mutabilidad puede mostrarse muy util, y puede hacer el codigo mas conveniente de escribir. Las variables son inmutables solo por defecto; como hiciste en el capitulo 2, puedes hacerlas mutables añadiendo <span class="in_text_command">mut</span> en frente del nombre de la variable. Añadir <span class="in_text_command">mut</span> tambien hace que las personas que lean tu codigo comprendan que el codigo eventualmente tiene pensado cambiar el valor de la variable.</p>
-    <p>Por ejemplo, cambiemos <i>src/main.rs</i> a lo siguiente:</p>
-    <p>Nombre del archivo: src/main.rs</p>
-    <pre class="example_code"><span class="orange_strong">fn</span> <span class=orange>main</span>() {
-        <span class="orange_strong">let mut</span> x = <span class="yellow">5</span>;
-        <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
-        x = <span class="yellow">6</span>;
-        <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
-    }</pre>
-    <p>Ahora, cuando corremos el programa, conseguimos esto:</p>
-    <pre class="example_command"><span class="yellow">$</span> cargo run
-        Compiling variables v0.1.0 (file:///projects/variables)
-         Finished dev [unoptimized + debuginfo] target(s) in 0.30s
-          Running `target/debug/variables`
-     El valor de x es: 5
-     El valor de x es: 6</pre>
-    <p>Tenemos permitido cambiar el valor que le fue dado a <span class="in_text_command">x</span> de <span class="in_text_command">5</span> a <span class="in_text_command">6</span> cuando <span class="in_text_command">mut</span> es usado. Al final del dia, decicidr si usar la mutabilidad o no depende de tí y de que pienses es lo mas util en cada situacion particular.</p>
-    <br>
-    <!-- Missing link in next p -->
-    <h3>Constantes</h3>
-    <p>Como las variables inmutables, las <i>constantes</i> son valores que estan unidos a un nombre y no tienen permitido cambiar, pero existen algunas diferencias entre las varibables y las constantes.</p>
-    <p>Primero, no esta permitido usar <span class="in_text_command">mut</span> con las constantes. Las constantes no solo son inmutables por default-- Ellas son siempre inmutables. Declaramos constantes usando la palabra clave <span class="in_text_command">const</span> en lugar de la palabra clave <span class="in_text_command">let</span>, y el tipo de valor de la constante debe ser especificada. Estamos por cubrir el tema de tipos de datos y sus anotaciones en la siguiente sección, <i><a target="_blank" href="">"Tipos de Datos,"</a></i> así que no te preocupes por los detalles por el momento. Solo ten en cuenta que siempre debes especificar el tipo de dato para las constantes.</p> 
-    <p>Las constantes pueden ser declaradas sin tener en cuenta el scope, incluyendo el alcance global, lo que las hace utiles para valores que muchas partes del codigo podrian necesitar.</p>
-    <p>La ultima diferencia es que el valor de las constantes deberia ser una expresion constante, no el resultado de un valor que solo podria ser computado al momento de correr el codigo.</p>
-    <p>Aquí tienes un ejemplo de la declaracion de una constante: </p>
-    <pre class="example_code"><span class="orange_strong">const</span> TRES_HORAS_EN_SEGUNDOS: <span class="orange">u32</span> = <span class="yellow">60</span> * <span class="yellow">60</span> * <span class="yellow">3</span>;</pre>
+    <!-- Empty HREF's up next -->
+    <nav class="side-nav-bar">
+        <div class="side-nav-scrollbox">   
+            <ol id="chapters">
+                <li><a href="">El lenguaje de programación Rust</a></li>
+                <li><a href="">Prefacio</a></li>
+                <li><a href="">Introducción</a></li>
+                <li><a href=""><strong>1. </strong>Primeros Pasos</a>
+                    <ol class="sub-chapters">
+                        <li><a href=""><strong>1.1. </strong>Instalación</a></li>
+                        <li><a href=""><strong>1.2. </strong>Hola, Mundo!</a></li>
+                        <li><a href=""><strong>1.3. </strong>Hola, Cargo!</a></li>
+                    </ol>
+                </li>
+                <li><a href=""><strong>2. </strong>Programando un Juego de Adivinanzas</a></li>
+                <li><a href=""><strong>3. </strong>Conceptos Comunes en la programación</a>
+                    <ol class="sub-chapters">
+                        <li><a><strong>3.1 </strong>Variables y Mutabilidad</a></li>
+                        <li><a href=""><strong>3.2 </strong>Tipos de Datos</a></li>
+                        <li><a href=""><strong>3.3 </strong>Funciones</a></li>
+                        <li><a href=""><strong>3.4 </strong>Comentarios</a></li>
+                        <li><a href=""><strong>3.5 </strong>Control del Flujo</a></li>
+                    </ol>
+                </li>
+                <li><a href=""><strong>4. </strong>Entendiendo la Posesión</a>
+                    <ol class="sub-chapters">
+                        <li><a href=""><strong>4.1. </strong>Que es la Posesión?</a></li>
+                        <li><a href=""><strong>4.2. </strong>Referencias y Tomar Prestado</a></li>
+                        <li><a href=""><strong>4.3. </strong>El Tipo: Slice</a></li>
+                    </ol>
+                </li>
+                <li><a href=""><strong>5. </strong>Usando Structs para Estructurar la Data Relacionada</a>
+                    <ol class="sub-chapters">
+                        <li><a href=""><strong>5.1. </strong>Definiendo y Estructurando los Structs</a></li>
+                        <li><a href=""><strong>5.2. </strong>Ejemplo de Programa usando Structs</a></li>
+                        <li><a href=""><strong>5.3. </strong>El Metodo Syntax</a></li>
+                    </ol>
+                </li>
+                <li><a href=""><strong>6. </strong>Enums y el Unir Patrones</a></li>
+                <li><a href=""><strong>7. </strong>Manejando Projectos en Crecimiento con Paquetes, Crates, y Modulos</a></li>
+                <li><a href=""><strong>8. </strong>Colleciones Comúnes</a></li>
+                <li><a href=""><strong>9. </strong>Manejo de los Errores</a></li>
+                <li><a href=""><strong>10. </strong>Tipos Genéricos, Rasgos y Tiempo de Vida</a></li>
+                <li><a href=""><strong>11. </strong>Escribiendo Tests Automatizados</a></li>
+                <li><a href=""><strong>12. </strong>Un Projecto I/O: Construyendo un Programa de Linea de Comand</a>o</li>
+                <li><a href=""><strong>13. </strong>Funciones del Lenguaje Funcionales: Iteradores y Cierres</a></li>
+                <li><a href=""><strong>14. </strong>Mas sobre Cargo y Crates.io</a></li>
+                <li><a href=""><strong>15. </strong>Pointers Inteligentes</a></li>
+                <li><a href=""><strong>16. </strong>Simultaneidad sin temor</a></li>
+                <li><a href=""><strong>17. </strong>Caracteristicas de la Programación Orientación a Objetos en Rust</a></li>
+                <li><a href=""><strong>18. </strong>Patrones y Uniones</a></li>
+                <li><a href=""><strong>19. </strong>Caracteristicas Avanzadas</a></li>
+                <li><a href=""><strong>20. </strong>Projecto Final: Construyendo un Servidor Web Multihilo</a></li>
+                <li><a href=""><strong>21. </strong>Apendice</a></li>
+            </ol>
+        </div>
+    </nav>
+    <div class="content">
+        <h2>Variables y Mutabilidad</h2>
+        <p>Como mencionamos en la seccion <a target="_blank" href="">"Guardando Valores con Variables"</a>, por defecto, las variables son inmutables. Esta es una de las ayudas que te da Rust para escribir tu codigo de una manera que tome ventaja de la seguridad y la simultaneidad que te ofrece este lenguaje. Sin embargo, aun tienes la opcion de hacer mutables tus variables. Exploremos como y por que Rust fomenta la inmutabilidad y por que aveces preferirias no utilizarla.</p>
+        <p>Cuando una variable es inmutable, una vez que un valor esta unido a su nombre, no se puede cambiar dicho valor. Para ilustrar esto, crearemos un nuevo projecto llamado <i>variables</i> en tu directorio <i>projectos</i> usando <span class="in_text_command">cargo new variables</span>.</p>
+        <p>Luego, en tu nuevo directorio <i>variables</i>, abriremos <i>src/main.rs</i> y reemplazaremos su codigo con el siguiente. Este codigo no compilará aún, primero examinaremos el error de inmutabilidad.</p>
+        <p>Nombre del archivo: src/main.rs</p>
+        <pre class="example_code_with_ferris">
+            <img class="ferris" src="https://lh3.googleusercontent.com/gLtxLv5iLVjv-pqV-Ly1hfNnQhNIXx7qJgdO1aVtz7Dw9pnJc_nCc082J5i8Kf94IqaYbUHmyljlooJ18sfMPWR5dgVjddwjfTc_h9d0ffqHAILJUWSUvPy0X0K5sHYHFGIx9N3X4bej69-ozxTQSMEdR9uQ6gjnjdQ93i--Rl0kbu0xqiFUqKf7YdtfNhFivnYRZVA_RQzigikz07sBj3PW3ejz5unm5ogHKxxSBbgUT1BmuhDjP9pOqEi0gNdlPD7ig1UXm-PbeFXEBm7Hrau7-OGbly2DvoOd68IepbhnBp38OwWNpdxNyWFWWdx90qsWG0XDOpIdFerPK1zOBjEnUGIAVxv0aoAwNcdeaGs1fYyGfELshhlh-2iWRTKvgNe-eT_ivWhU0w3SxNNQcn7hk3Yc5fbl4Jm0mHVAzZdWkLVz4HVECRXU8ay0wiZZPLO8fgW9wbzye864zXOygopDwqhzitOqfxaz5I9Xgcl316vvUhGXN6q4D1sIX4bCt9SxqiV7NXIzuyGI9aBheAXVJ2WlONU4IlzxoMM9Mn2MYlLk48N9WNa4fJLvHzPGFCnal8RTuvzD5rH5C0a-5BjwDmAm6yoVZ1W_EM1bd4HogCnx2gvBK5tx4Jy_L7vY9QScw1qHzwaBRO8H3-0FABPf6jtlU1pC3nRXtcXSgQz6rahOeoKv65tBrXJ8d0R_0mBMWJjHEMqGRT7GqRGams5QSGnwMSOk6Jnwh8rZ5Pmwr6KcYn3rECmDP6dFd_jaahi9AweVjn04DDd0ZMVS1bOTM5-syT27VQ=w1259-h847-no?authuser=0" alt="ferris">
+<span class="orange_strong">fn</span> <span class=orange>main</span>() {
+    <span class="orange_strong">let</span> x = <span class="yellow">5</span>;
+    <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
+    x = <span class="yellow">6</span>;
+    <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
+}</pre>
+        <p>Guarda y corre el archivo usando <span class="in_text_command">cargo run</span>. Deberias recibir un mensaje de error, como lo muestra en el output.</p>
+        <pre class="example_command"><span class="yellow">$</span> cargo run
+    Compiling variables v0.1.0 (file:///projects/variables)
+error[E0384]: cannot assign twice to immutable variable `x`
+ <span class="yellow">--></span> src/main.rs:4:5
+    |
+  2 |     let x = 5;
+    |         -
+    |         |
+    |         first assignment to `x`
+    |         help: consider making this binding mutable: `mut x`
+  3 |     println!("El valor de x es: {x}");
+  4 |     x = 6;
+    |     ^^^^^ cannot assign twice to immutable variable
+        
+For more information about this error, try `rustc --explain E0384`.
+error: could not compile `variables` due to previous error</pre>
+        <p>Este ejemplo anterior nos muestra como el compilador puede ayudarnos a encontrar errores en nuestros programas. Los errores de compilado pueden ser frustrantes, pero en realidad todo lo que muestran es que nuestro codigo aún no esta funcionando como queremos. Estos errores <i>no</i> significan que no eres un buen programador! Incluso a los Rustaceos más experimentados les aparecen errores de compilado.</p>
+        <p>El error de compilado indica que la causa del error es gracias a que no se puede <span class="in_text_command"> asignar dos veces a la variable inmutable `x`</span>, porque intentamos asignar un segundo valor a la variable inmutable <span class="in_text_command">x</span>.</p>
+        <p>Es importante que tengamos errores durante el compilado cuando intentamos cambiar un valor que esta designado como inmutable porque esta misma situacion puede llevar a un bug. Si una parte de nuestro codigo opera bajo la suposición de que un valor no va a cambiar y otra parte de nuestro codigo cambia dicho valor, es posible que la primer parte del codigo no haga la cosa para el cual fue diseñado. La causa de este tipo de bug puede ser dificil de encontrar despues de haber cometido el error, mucho mas cuando la segunda parte del codigo solo <i>aveces</i> cambia el valor de la variable. El compilador de Rust se asegura de que al decirle que un valor no debe cambiar, de verdad no cambie, para que no tengas que tenerlo en mente por tu cuenta. De esta manera tu codigo se vuelve mas simple de entender.</p>
+        <p>Pero la mutabilidad puede mostrarse muy util, y puede hacer el codigo mas conveniente de escribir. Las variables son inmutables solo por defecto; como hiciste en el capitulo 2, puedes hacerlas mutables añadiendo <span class="in_text_command">mut</span> en frente del nombre de la variable. Añadir <span class="in_text_command">mut</span> tambien hace que las personas que lean tu codigo comprendan que el codigo eventualmente tiene pensado cambiar el valor de la variable.</p>
+        <p>Por ejemplo, cambiemos <i>src/main.rs</i> a lo siguiente:</p>
+        <p>Nombre del archivo: src/main.rs</p>
+        <pre class="example_code"><span class="orange_strong">fn</span> <span class=orange>main</span>() {
+    <span class="orange_strong">let mut</span> x = <span class="yellow">5</span>;
+    <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
+    x = <span class="yellow">6</span>;
+    <span class="yellow">println!</span>(<span class="green_string">"El valor de x es: {x}"</span>);
+}</pre>
+     <p>Ahora, cuando corremos el programa, conseguimos esto:</p>
+        <pre class="example_command"><span class="yellow">$</span> cargo run
+     Compiling variables v0.1.0 (file:///projects/variables)
+      Finished dev [unoptimized + debuginfo] target(s) in 0.30s
+       Running `target/debug/variables`
+El valor de x es: 5
+El valor de x es: 6</pre>
+        <p>Tenemos permitido cambiar el valor que le fue dado a <span class="in_text_command">x</span> de <span class="in_text_command">5</span> a <span class="in_text_command">6</span> cuando <span class="in_text_command">mut</span> es usado. Al final del dia, decicidr si usar la mutabilidad o no depende de tí y de que pienses es lo mas util en cada situacion particular.</p>
+        <br>
+        <!-- Missing link in next p -->
+        <h3>Constantes</h3>
+        <p>Como las variables inmutables, las <i>constantes</i> son valores que estan unidos a un nombre y no tienen permitido cambiar, pero existen algunas diferencias entre las varibables y las constantes.</p>
+        <p>Primero, no esta permitido usar <span class="in_text_command">mut</span> con las constantes. Las constantes no solo son inmutables por default-- Ellas son siempre inmutables. Declaramos constantes usando la palabra clave <span class="in_text_command">const</span> en lugar de la palabra clave <span class="in_text_command">let</span>, y el tipo de valor de la constante debe ser especificada. Estamos por cubrir el tema de tipos de datos y sus anotaciones en la siguiente sección, <i><a target="_blank" href="">"Tipos de Datos,"</a></i> así que no te preocupes por los detalles por el momento. Solo ten en cuenta que siempre debes especificar el tipo de dato para las constantes.</p> 
+        <p>Las constantes pueden ser declaradas sin tener en cuenta el scope, incluyendo el alcance global, lo que las hace utiles para valores que muchas partes del codigo podrian necesitar.</p>
+        <p>La ultima diferencia es que el valor de las constantes deberia ser una expresion constante, no el resultado de un valor que solo podria ser computado al momento de correr el codigo.</p>
+        <p>Aquí tienes un ejemplo de la declaracion de una constante: </p>
+        <pre class="example_code"><span class="orange_strong">const</span> TRES_HORAS_EN_SEGUNDOS: <span class="orange">u32</span> = <span class="yellow">60</span> * <span class="yellow">60</span> * <span class="yellow">3</span>;</pre>
 
-    <!-- Missing link in next p -->
-    <p>El nombre de la constante es <span class="in_text_command">TRES_HORAS_EN_SEGUNDOS</span> y su valor es el resultado de multiplicar 60 (la cantidad de segundos en un minuto) por 60 (la cantidad de minutos en una hora) por 3 (el numero de horas que queremos contar en este programa). La manera convencional de nombrar las constantes en Rust es todo en mayusculas, con guiones bajos separando las palabras. El compilador es capaz de evaluar una cantidad limitada de operaciones durante el compilado, lo que nos permite elegir como escribir este valor de una manera que sea mas simple de entender y de verificar, en lugar de darle a la constante un valor de 10,800. Mirá la <a target="_blank" href="">Sección de Referencias en Evaluación de Constantes en Rust</a> para mas informacion sobre que operaciones pueden ser usadas cuando declaramos constantes.</p>
+        <!-- Missing link in next p -->
+        <p>El nombre de la constante es <span class="in_text_command">TRES_HORAS_EN_SEGUNDOS</span> y su valor es el resultado de multiplicar 60 (la cantidad de segundos en un minuto) por 60 (la cantidad de minutos en una hora) por 3 (el numero de horas que queremos contar en este programa). La manera convencional de nombrar las constantes en Rust es todo en mayusculas, con guiones bajos separando las palabras. El compilador es capaz de evaluar una cantidad limitada de operaciones durante el compilado, lo que nos permite elegir como escribir este valor de una manera que sea mas simple de entender y de verificar, en lugar de darle a la constante un valor de 10,800. Mirá la <a target="_blank" href="">Sección de Referencias en Evaluación de Constantes en Rust</a> para mas informacion sobre que operaciones pueden ser usadas cuando declaramos constantes.</p>
+        <br>
+        <h3>Opacado</h3>
+        <!-- Missing HREF ahead -->
+        <p>Como viste en el tutorial del juego de adivinanzas del <a href="">Capitulo 2</a>, podemos declarar una variable con el mismo nombre de una variable previa. Los Rustaceos dicen que la primera variable esta siendo <i>opacada</i> por la segunda, lo que significa que la segunda variable sera la que el compilador vea cuando se use el nombre de la variable. En uso, la segunda variable opaca a la primera, agarrando cualquier uso del nombre de la variable para si misma hasta que esta sea opacada por otra o hasta que el alcance (scope) se termine. Podemos opacar a una variable utilizando el mismo nombre de una variable y repitiendo el uso de la palabra clave <span class="in_text_command">let</span> de la manera siguiente:  </p>
+    </div>
 </body>
 </html>
